@@ -10,6 +10,8 @@
   - [Custody Practices](#custody-practices)
   - [Post-Quantum Cryptography](#post-quantum-cryptography)
   - [Output Types](#output-types)
+  - [PQC Precommitment for Post-Quantum Migration](#pqc-precommitment-for-post-quantum-migration)
+  - [Quantum-Safe Bitcoin (QSB)](#quantum-safe-bitcoin-qsb)
   - [Testing Environments](#testing-environments)
   - [Migration Safeguards](#migration-safeguards)
   - [Legacy Coin Policy](#legacy-coin-policy)
@@ -21,16 +23,17 @@
   - [Emergency Safeguard in a Live CRQC Theft Environment](#emergency-safeguard-in-a-live-crqc-theft-environment)
 - [Forward Outlook](#forward-outlook)
 - [Appendix](#appendix)
+  - [Glossary](#glossary)
 
 ## **Key Takeaways**
 
-* The viability and timeline of cryptographically relevant quantum computers (CRQCs) are still uncertain. While there has been recent progress in error correction and resource estimates, scaling the actual operations required for cryptographically relevant machines remains an unproven bottleneck.    
-* Cryptographically relevant quantum computers (CRQCs) are not a structural threat to bitcoin consensus or its monetary foundations (e.g. issuance schedule, supply cap, etc.). The main risk to bitcoin is targeted theft of coins with exposed public keys.   
-* Most bitcoin are not vulnerable at rest because their public keys are hidden until spent. However, if a CRQC existed today, an estimated \~6.5M BTC (\~⅓ of supply) would be immediately vulnerable to theft due to long-exposed public keys. Notably, over two-thirds of that vulnerable supply (\~4.5M BTC) is attributed to "address reuse," with much of it concentrated in a small number of large custodians, often for operational simplicity, and reducible without any protocol change.   
+* The viability and timeline of cryptographically relevant quantum computers (CRQCs) (i.e., quantum computers powerful enough to break the elliptic curve cryptography Bitcoin relies on today) are still uncertain. While there has been recent progress in error correction and resource estimates, scaling the actual operations required for cryptographically relevant machines remains an unproven bottleneck.    
+* Cryptographically relevant quantum computers (CRQCs) are not a structural threat to bitcoin consensus or its monetary foundations (e.g. issuance schedule, supply cap, etc.). The main risk to bitcoin is targeted theft of coins with exposed public keys. A public key is the public half of a cryptographic key pair associated with a specific Bitcoin address; the matching private key is what authorizes spending from that address, and a CRQC could derive the private key from the public one.  
+* Most bitcoin are not vulnerable at rest because their public keys are hidden until spent. However, if a CRQC existed today, an estimated \~6.5M BTC (\~⅓ of supply) would be immediately vulnerable to theft due to long-exposed public keys. Notably, over two-thirds of that vulnerable supply (\~4.5M BTC) is attributed to "address reuse" (spending from the same Bitcoin address more than once, which exposes the public key). Much of this reuse is concentrated in a small number of large custodians, often for operational simplicity, and is reducible without any protocol change.   
 * The core protocol upgrade to enable quantum-safe spending is post-quantum signatures, which are already technically feasible today but come with meaningful trade-offs. Bitcoin will likely start with a conservative, optional quantum-secure spending path (e.g., SHRINCS[^shrincs] and SHRIMPS[^shrimps] in combination), then iterate, refine, and potentially upgrade as more efficient post-quantum schemes become available.  
 * Migration capacity itself is unlikely to be a bottleneck. On-chain estimates suggest that if \~25% of block space were dedicated to migration, \~90% of bitcoin's value could move in \~4 days, and \~98% in \~3 weeks.  
 * If CRQCs arrive abruptly, bitcoin has a wide range of potential interim defense options that can reduce theft risk, make migration safer, and buy time for a full upgrade (e.g., hiding public keys during spends and temporarily freezing vulnerable coins with quantum-safe recovery paths). There's also a playbook[^crqc-playbook], made in conjunction with bitcoin developers, that outlines a concrete plan for rapid-response.  
-* What to do with unmigrated legacy coins is an open question and the likeliest fault line for a fork, which will ultimately be resolved by the market.   
+* What to do with unmigrated legacy coins is an open question and the likeliest fault line for a fork (a permanent split where the network diverges into two separate, independent chains), which will ultimately be resolved by the market.   
 * Given bitcoin's conservatism and distributed governance, coordination and speed—not technical feasibility—are the main risks to a successful transition to post-quantum bitcoin. However, work is already underway[^roasbeef-gist], and developer attention is visible: for example, in bitcoin's main protocol development forum[^bitcoin-dev-mailing-list], the share of messages discussing quantum-related topics has risen steadily from \~5% in 2024 to \~50% in 2026 (through March).  
 
 ## **Context and Scope** 
@@ -60,7 +63,7 @@ A sufficiently advanced CRQC would break bitcoin's elliptic curve cryptography, 
 
 Within quantum-enabled theft, there are two attack modes: long-range and short-range. 
 
-Long-range theft would target coins whose public keys have been visible on-chain for a long time, either by design or by behavior. The former, structurally exposed coins, have public keys visible on-chain as a built-in feature of their design: for example, early-era Pay-to-Public-Key (P2PK) outputs and more recently introduced Pay-to-Taproot (P2TR) outputs. The latter, operationally exposed coins, are those made vulnerable by user behavior, namely, address reuse; once a public key is revealed in a spend, any remaining funds tied to that same address become targets. Long-exposed public keys would likely be the first targets of CRQCs, since attackers have no time constraints when deriving the private key from the public key, making the performance requirements and economics far more forgiving. 
+Long-range theft would target coins whose public keys have been visible on-chain for a long time, either by design or by behavior. The former, structurally exposed coins, have public keys visible on-chain as a built-in feature of their design: for example, early-era Pay-to-Public-Key (P2PK) outputs, bitcoin's original output format, where the public key sits in plain view on the blockchain; and more recently introduced Pay-to-Taproot (P2TR) outputs, a newer, more capable format adopted for efficiency and privacy reasons, which also exposes a public key on the blockchain. The latter, operationally exposed coins, are those made vulnerable by user behavior, namely, address reuse; once a public key is revealed in a spend, any remaining funds tied to that same address become targets. Long-exposed public keys would likely be the first targets of CRQCs, since attackers have no time constraints when deriving the private key from the public key, making the performance requirements and economics far more forgiving. 
 
 A recent analysis (June 2025\) suggests that roughly 6.5 million BTC, about one-third of the total supply, would be vulnerable to long-range theft if a CRQC existed today.
 
@@ -68,7 +71,7 @@ A recent analysis (June 2025\) suggests that roughly 6.5 million BTC, about one-
 
 Source: Analysis of Quantum Vulnerable Bitcoin[^quantum-vulnerable-analysis] 
 
-Coins whose public keys are not visible on-chain (i.e., hashed formats, the most commonly used address types today) would only become vulnerable to short-range theft during a spend window, when the transaction reveals the public key. Whether early CRQCs would be powerful enough to exploit that brief window (usually a block, roughly 10 minutes) remains uncertain, but it is a possibility.  
+Coins in hashed address formats (where only a cryptographic fingerprint of the public key is stored on-chain) are the most commonly used types today and would only become vulnerable to short-range theft during a spend window, when the spending transaction reveals the public key. Whether early CRQCs would be powerful enough to exploit that brief window (usually a block, roughly 10 minutes) remains uncertain, but it is a possibility.  
 
 CRQCs also pose a potential threat to Bitcoin mining, as Grover's algorithm theoretically enables a CRQC to search for a block header whose hash is below the difficulty target quadratically faster than classical computers. That said, quantum mining is not easily parallelizable, making it difficult to compete at scale with large-scale classical mining operations. For a deeper dive into quantum's potential impact on Bitcoin mining, we recommend Chaincode Labs' report[^chaincode-mining-report].
 
@@ -90,7 +93,7 @@ Source: Analysis of Quantum Vulnerable Bitcoin (June 2025\)[^quantum-vulnerable-
 
 ### Post-Quantum Cryptography
 
-The core mitigation, however, is to replace bitcoin's elliptic curve cryptography with post-quantum cryptographic algorithms. This protects bitcoin holders from both short-range and long-range theft. There is also recent precedent for bitcoin adopting new signature schemes, as the 2021 Taproot soft fork added Schnorr signatures alongside ECDSA.
+The core mitigation, however, is to replace bitcoin's elliptic curve cryptography with post-quantum cryptographic algorithms. This protects bitcoin holders from both short-range and long-range theft. There is also recent precedent for bitcoin adopting new signature schemes, as the 2021 Taproot soft fork (a backward-compatible upgrade where nodes that don't upgrade still stay on the same network as everyone else) added Schnorr signatures alongside ECDSA, the elliptic curve signature scheme Bitcoin has used since launch.
 
 There are two leading classes of post-quantum signatures: lattice-based and hash-based. Lattice-based signatures are better in terms of throughput and fees because they're relatively compact. However, lattice-based cryptography is still quite new, so there is a risk it ultimately turns out to be weaker than expected. Hash-based signatures, on the other hand, are simpler and more conservative, introducing no novel cryptographic assumptions since they rely solely on hash functions, which are already widely used in bitcoin (e.g., in mining, scripts, commitments, etc.). However, they are much larger on-chain, meaning lower throughput and higher fees.
 
@@ -100,9 +103,13 @@ Given that implementing new cryptography in bitcoin is a complex, network-wide u
 
 ### Output Types
 
-Taproot-like output types can support optional spend paths in conjunction with a new post-quantum signature scheme.  
-   
-In today's Pay-To-Taproot (P2TR) and in proposed Taproot-like successors such as BIP-360[^bip-360]'s Pay-To-Merkle-Root (P2MR) and Pay-to-Quantum-safe[^p2q] (P2Q), wallets could create one output with two spending paths: the signature path used today and a post-quantum path used later if needed. This gives holders flexibility to spend in a quantum-safe way without migrating again. The main tradeoff is that P2TR retains long-range theft risk through its public-key-exposing key-path spend, unless the key-path spend is later disabled or frozen. BIP-360's P2MR removes that public key exposure upfront by eliminating the key path. P2Q takes a middle approach, preserving Taproot behavior today in a separate output type whose key path could later be disabled via soft fork.
+All bitcoin are secured by various "output types" (i.e., different rule sets that determine how coins can be spent).
+
+A defining feature of Taproot-like output types, such as P2TR, is that they support multiple, optional spending conditions. Once a post-quantum signature scheme is implemented, quantum-secure spending paths could be added alongside existing signature schemes.
+
+For example, take today's Pay-to-Taproot (P2TR); BIP-360[^bip-360]'s Pay-to-Merkle-Root (P2MR), a proposed Taproot-style output type that avoids exposing a public key on-chain; and Pay-to-Quantum-safe[^p2q] (P2Q), a proposed Taproot-style output whose quantum-vulnerable path can later be disabled by soft fork. In each of these, wallets could create one output with two spending paths: the signature path used today and a post-quantum path used later if needed. This gives holders flexibility to spend in a quantum-safe way without migrating again.
+
+The main trade-off is that P2TR retains long-range theft risk through its public-key-exposing key-path spend, unless the key-path spend is later disabled or frozen. BIP-360's P2MR removes that public key exposure upfront by eliminating the key path; however, if P2MR is implemented without a post-quantum signature scheme, reusing an address still exposes the public key on the first spend, leaving any remaining or subsequent coins at that address vulnerable again. P2Q takes a middle approach, preserving Taproot behavior today in a separate output type whose key path could later be disabled via soft fork.
 
 ### PQC Precommitment for Post-Quantum Migration
 
@@ -112,7 +119,7 @@ By committing to a placeholder spend path that is valid under current rules, use
 
 ### Quantum-Safe Bitcoin (QSB)
 
-Quantum Safe Bitcoin (QSB)[^quantum-safe-bitcoin] is a mechanism that enables quantum-resistant transactions using existing bitcoin consensus rules, meaning no protocol changes are required. This is accomplished by replacing reliance on elliptic curve cryptography with a hash-based construction (Binohash) embedded in bitcoin script, creating a hash-to-signature puzzle resistant to quantum attack.
+Quantum-Safe Bitcoin (QSB)[^quantum-safe-bitcoin] is a mechanism that enables quantum-resistant transactions using existing bitcoin consensus rules, meaning no protocol changes are required. This is accomplished by replacing reliance on elliptic curve cryptography with a hash-based construction (Binohash) embedded in bitcoin script, creating a hash-to-signature puzzle resistant to quantum attack.
 
 While QSB does not require a soft fork to implement, it does come with its fair share of trade-offs. For instance, generating a valid transaction requires searching through billions of candidates, a GPU-intensive process that can cost $75 - $200 per transaction in compute. As a result, it is better understood as a protective fallback or specialized mitigation than as a likely replacement for protocol-level post-quantum upgrades.
 
@@ -120,7 +127,7 @@ While QSB does not require a soft fork to implement, it does come with its fair 
 
 Protocol upgrades can be tested in production environments, but with lower-stakes than bitcoin mainnet, allowing developers to gather real performance data and build familiarity with post-quantum signatures before proposing base-layer changes.
 
-In fact, post-quantum signatures are already being tested on live bitcoin infrastructure. In March 2026, Blockstream Research deployed[^blockstream-shrincs-deployment] a SHRINCS verifier on the Liquid sidechain. Other sidechains like Anduro[^anduro], as well as quantum-resistant roll-ups, can serve a similar purpose. 
+In fact, post-quantum signatures are already being tested on live bitcoin infrastructure. In March 2026, Blockstream Research deployed[^blockstream-shrincs-deployment] a SHRINCS verifier on the Liquid sidechain (a Bitcoin-pegged sidechain with its own feature set, which can also serve as a lower-stakes venue for trialing new protocol capabilities). Other sidechains like Anduro[^anduro], as well as quantum-resistant roll-ups (layer-2 systems that process transactions off-chain and settle them back to Bitcoin), can serve a similar purpose. 
 
 ### Migration Safeguards 
 
@@ -144,7 +151,7 @@ Assuming a post-quantum destination exists and migration is meaningfully underwa
 
    Limit how fast vulnerable outputs can move once risk is high (e.g., 'Hourglass' proposes rate-limiting the movement of P2PK outputs to 1-per-block).
 
-3. #### **Freeze coins in legacy addresses, with a recovery path ("soft-freeze**")
+3. #### **Freeze coins in legacy addresses, with a recovery path ("soft-freeze")**
 
    Recent research by BitMEX[^bitmex-quantum-freeze] outlines one path by which all legacy spends are turned off, while owners can recover coins by proving they control the original wallet's seed phrase.
    
@@ -166,7 +173,7 @@ Bitcoin is deliberately hard to change. There is no board vote or central commit
 
 So, at a high level, an orderly transition would move through three phases: research and BIP drafting, implementation and activation, and, finally, migration. Currently, the ecosystem remains firmly in the first phase. Leading developers and researchers (notably Chaincode Labs[^chaincode-labs] and Blockstream Research[^blockstream-research]) are making active progress, but there is no agreed-upon specification and no timeline for deployment. 
 
-### How an orderly transition will likely work
+### How an Orderly Transition Will Likely Work
 
 1) **Choose a post-quantum signature and output type**  
    The likely first step will be for the community to reach consensus and add a safe, conservative, bitcoin-tailored signature scheme. Today, the most likely options are the SPHINCS+ variants SHRINCS[^shrincs-2] and SHRIMPS[^shrimps-2] in combination.
@@ -176,7 +183,7 @@ So, at a high level, an orderly transition would move through three phases: rese
 2) **Merge BIP(s) via soft fork**   
    If the path forward involves a new output type rather than extending P2TR, it will likely be bundled into a larger soft-fork proposal. While consensus on the signature scheme and output type does not need to occur together, bundling them makes the upgrade easier to review, implement, and adopt. There is precedent for this: the Taproot upgrade, activated in November 2021, bundled three separate BIPs into a single soft fork: BIP 340 (Schnorr signatures), BIP 341 (Taproot, the new P2TR output type), and BIP 342 (Tapscript, updated script validation rules for the new output).
    
-   A post-quantum soft fork may follow a similar pattern, pairing a new signature verification opcode (e.g., OP\_SHRINCSVERIFY) with a new output type like BIP-360's P2MR.
+   A post-quantum soft fork may follow a similar pattern, pairing a new signature verification opcode (an instruction in Bitcoin's built-in scripting language), such as OP\_SHRINCSVERIFY, with a new output type like BIP-360's P2MR.
    
    Given that current state-of-the-art post-quantum signature schemes produce significantly larger signatures, a block size increase may be proposed to maintain practical transaction throughput.
    
@@ -188,7 +195,7 @@ So, at a high level, an orderly transition would move through three phases: rese
     This preserves normal spending efficiency while keeping a post-quantum option ready if a CRQC appears imminent.  
   
 4) **Migration and adoption**  
-   At that point, users could begin moving funds into the output(s) that support the new post-quantum spend path. On-chain capacity will almost certainly not be the limiting factor: based on an estimate using recent UTXO-set data[^mempool-utxo-report], if \~25% of block space were dedicated to migration, \~90% of bitcoin's value could move in \~4.4 days (\~956k UTXOs), and \~98% in \~3.5 weeks (\~5.3M UTXOs). The more likely constraint would be behavioral, since bitcoin wallet upgrades tend to be slow unless there is a clear forcing function.   
+   At that point, users could begin moving funds into the output(s) that support the new post-quantum spend path. On-chain capacity will almost certainly not be the limiting factor: based on an estimate using recent UTXO-set (the set of all unspent coins currently on Bitcoin’s ledger) data[^mempool-utxo-report], if \~25% of block space were dedicated to migration, \~90% of bitcoin's value could move in \~4.4 days (\~956k UTXOs), and \~98% in \~3.5 weeks (\~5.3M UTXOs). The more likely constraint would be behavioral, since bitcoin wallet upgrades tend to be slow unless there is a clear forcing function.   
 
 5) **Keep improving post-quantum signatures**   
    Meanwhile, researchers and developers would keep working on lighter, more performant post-quantum signature schemes while tracking improvements within the broader cryptography community. If/when CRQCs are imminent, another, more mature post-quantum signature scheme could also be deployed.  
@@ -246,6 +253,44 @@ A careful yet proactive approach will help protect the network's functioning and
 
 
 ## **Appendix**
+
+### Glossary
+| Term | Definition |
+| :--- | :--- |
+| Address reuse | Spending from the same Bitcoin address more than once, which exposes the public key. |
+| BIP (Bitcoin Improvement Proposal) | A formal proposal document for changes to Bitcoin's protocol, specification, or standards. |
+| Commit/reveal scheme | A transaction protection mechanism where a user first publishes a post-quantum-secured commitment to the hash of a later vulnerable spend, waits for confirmations, then broadcasts the spend. Because it is locked to the earlier commitment, a quantum attacker cannot substitute its own transaction. |
+| Cryptographically Relevant Quantum Computer (CRQC) | A quantum computer powerful enough to break the elliptic curve cryptography Bitcoin relies on today. |
+| ECDSA (Elliptic Curve Digital Signature Algorithm) | The elliptic curve signature scheme Bitcoin has used since launch. |
+| Elliptic curve cryptography | The cryptographic system that secures Bitcoin transactions today, and which a sufficiently advanced CRQC could break. |
+| Fork | A permanent split where the network diverges into two separate, independent chains. |
+| Grover's algorithm | A quantum algorithm that provides a quadratic speedup for brute-force searches. |
+| Hash-based signatures | A class of post-quantum signature schemes that rely solely on hash functions; simpler and more conservative, but larger on-chain. |
+| Hashed address formats | Output types where only a cryptographic fingerprint of the public key is stored on-chain. |
+| Lattice-based signatures | A class of post-quantum signature schemes that are relatively compact but based on newer cryptographic assumptions. |
+| Long-range theft | Quantum-enabled theft targeting coins whose public keys have been visible on-chain for a long time. |
+| Opcode | An instruction in Bitcoin's built-in scripting language. |
+| Output type | A rule set that determines how coins can be spent (e.g., P2PK, P2TR, P2MR). |
+| P2MR (Pay-to-Merkle-Root) | A proposed Taproot-style output type, defined in BIP-360, that avoids exposing a public key on-chain. |
+| P2PK (Pay-to-Public-Key) | Bitcoin's original output format, where the public key sits in plain view on the blockchain. |
+| P2Q (Pay-to-Quantum-safe) | A proposed Taproot-style output whose quantum-vulnerable path can later be disabled by soft fork. |
+| P2TR (Pay-to-Taproot) | A newer, more capable output format adopted for efficiency and privacy reasons, which also exposes a public key on the blockchain when spent via the key path. |
+| Post-quantum cryptography | Cryptographic algorithms designed to resist attacks from quantum computers. |
+| PQC precommitment | A mechanism that allows users to pre-position funds for a future post-quantum signature scheme before Bitcoin activates post-quantum signature verification in consensus. |
+| Private key | The secret half of a cryptographic key pair; what authorizes spending from a Bitcoin address. |
+| Private mempool | A relay where transactions are sent directly to a miner rather than broadcast publicly. |
+| Public key | The public half of a cryptographic key pair associated with a specific Bitcoin address. |
+| Quantum-Safe Bitcoin (QSB) | A mechanism that enables quantum-resistant transactions using existing Bitcoin consensus rules, by replacing reliance on elliptic curve cryptography with a hash-based construction (Binohash) embedded in Bitcoin script. |
+| Roll-up | A layer-2 system that processes transactions off-chain and settles them back to Bitcoin. |
+| Schnorr signatures | A signature scheme added alongside ECDSA in Bitcoin's 2021 Taproot soft fork. |
+| Seed phrase | A 12-24 word phrase used to derive a wallet's keys; quantum-resistant because a CRQC cannot derive an ordered seed phrase from an exposed public key. |
+| Short-range theft | Quantum-enabled theft during the brief window when a spending transaction reveals the public key (usually a block, roughly 10 minutes). |
+| Sidechain | A separate blockchain that is pegged to Bitcoin and has its own feature set; can also serve as a lower-stakes venue for trialing new protocol capabilities. |
+| Soft fork | A backward-compatible upgrade where nodes that don't upgrade still stay on the same network as everyone else. |
+| SPHINCS+ | A hash-based post-quantum signature scheme that is the basis for most of the Bitcoin-specific post-quantum work to date. |
+| SHRINCS / SHRIMPS | SPHINCS+ variants tailored for Bitcoin, likely to be used in combination for the initial post-quantum spend path. |
+| Taproot-like output type | An output type that supports multiple, optional spending conditions (e.g., P2TR, P2MR, P2Q). |
+| UTXO (Unspent Transaction Output) | An unspent coin on Bitcoin's ledger; the UTXO set is the set of all unspent coins currently on Bitcoin's ledger. |
 
 **Bitcoin Development Mailing List Analysis**:   
 Data was sourced from the bitcoin-dev mailing list public-inbox git mirror (\~24,073 emails, 2011–2026). Messages were classified as quantum-related using keyword matching (e.g., "quantum," "lamport," "p2qrh," "shor," "hourglass," "bip360," etc.). After automated classification, results were analyzed to remove any false positives. Every individual email sent to the mailing list counts as a message, whether it's an original post starting a new thread or a reply within an existing thread.
