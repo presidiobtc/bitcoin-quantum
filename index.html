@@ -1,0 +1,1251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#ffffff">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+    <!-- SEO Meta Tags -->
+    <title>Bitcoin's Quantum Readiness: Exposure, Mitigations, and Upgrade Paths | Presidio Bitcoin</title>
+    <meta name="description" content="A comprehensive analysis of Bitcoin's exposure to a Cryptographically Relevant Quantum Computer (CRQC), mitigations available today, and upgrade paths for the Bitcoin protocol. Research published by Presidio Bitcoin.">
+    <meta name="keywords" content="Bitcoin, quantum computing, CRQC, post-quantum cryptography, BIP-360, P2QRH, P2MR, SPHINCS+, quantum-safe Bitcoin, soft fork, Bitcoin upgrades">
+    <meta name="author" content="Presidio Bitcoin">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://presidiobtc.github.io/bitcoin-quantum/">
+    <link rel="icon" type="image/png" href="favicon.png?v=2">
+    <link rel="apple-touch-icon" href="favicon.png?v=2">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://presidiobtc.github.io/bitcoin-quantum/">
+    <meta property="og:title" content="Bitcoin's Quantum Readiness: Exposure, Mitigations, and Upgrade Paths">
+    <meta property="og:description" content="A comprehensive analysis of Bitcoin's exposure to quantum computing, available mitigations, and protocol upgrade paths. Research by Presidio Bitcoin.">
+    <meta property="og:image" content="https://opengraph.githubassets.com/1/presidiobtc/bitcoin-quantum">
+    <meta property="og:site_name" content="Presidio Bitcoin">
+    <meta property="article:published_time" content="2026-04-01">
+    <meta property="article:author" content="Presidio Bitcoin">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://presidiobtc.github.io/bitcoin-quantum/">
+    <meta name="twitter:title" content="Bitcoin's Quantum Readiness: Exposure, Mitigations, and Upgrade Paths">
+    <meta name="twitter:description" content="A comprehensive analysis of Bitcoin's exposure to quantum computing, available mitigations, and protocol upgrade paths.">
+    <meta name="twitter:image" content="https://opengraph.githubassets.com/1/presidiobtc/bitcoin-quantum">
+
+    <!-- Additional SEO -->
+    <meta name="language" content="English">
+    <meta name="revisit-after" content="30 days">
+    <meta http-equiv="content-language" content="en">
+
+    <!-- Schema.org JSON-LD -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": "Bitcoin's Quantum Readiness: Exposure, Mitigations, and Upgrade Paths",
+        "description": "A comprehensive analysis of Bitcoin's exposure to a Cryptographically Relevant Quantum Computer, mitigations, and protocol upgrade paths.",
+        "image": "https://opengraph.githubassets.com/1/presidiobtc/bitcoin-quantum",
+        "author": {
+            "@type": "Organization",
+            "name": "Presidio Bitcoin",
+            "url": "https://presidiobitcoin.org/"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "Presidio Bitcoin",
+            "url": "https://github.com/presidiobtc/bitcoin-quantum"
+        },
+        "datePublished": "2026-04-01",
+        "dateModified": "2026-04-19",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https://presidiobtc.github.io/bitcoin-quantum/"
+        },
+        "keywords": "Bitcoin, quantum computing, CRQC, post-quantum cryptography, BIP-360, P2QRH, SPHINCS+",
+        "articleSection": "Research"
+    }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        :root {
+            --accent: #8a9270;
+            --accent-dark: #5f6a48;
+            --accent-soft: rgba(138, 146, 112, 0.1);
+            --accent-soft-strong: rgba(138, 146, 112, 0.18);
+            --text: #1f2328;
+            --text-muted: #57606a;
+            --border: #e1e4e8;
+            --bg: #f5f5f5;
+            --bg-card: #ffffff;
+            --code-bg: #f6f8fa;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg);
+            display: flex;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 300px;
+            height: 100vh;
+            background-color: var(--bg-card);
+            border-right: 1px solid var(--border);
+            overflow-y: auto;
+            padding: 24px;
+            box-sizing: border-box;
+        }
+
+        .sidebar-header {
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .sidebar-brand {
+            display: block;
+            margin-bottom: 14px;
+            text-decoration: none;
+        }
+
+        .sidebar-brand:hover {
+            text-decoration: none;
+            opacity: 0.75;
+        }
+
+        .sidebar-wordmark {
+            display: block;
+            font-family: 'IM Fell English SC', 'Cormorant SC', Georgia, serif;
+            font-size: 26px;
+            font-weight: 400;
+            color: var(--text);
+            letter-spacing: 0.5px;
+            line-height: 1;
+            white-space: nowrap;
+        }
+
+        .sidebar-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text);
+            margin: 0 0 12px 0;
+            line-height: 1.4;
+        }
+
+        .sidebar-meta {
+            font-size: 12px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .sidebar-meta p {
+            margin: 4px 0;
+        }
+
+        .sidebar-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 14px;
+        }
+
+        .sidebar-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background-color: var(--code-bg);
+            border: 1px solid #d1d5da;
+            border-radius: 6px;
+            color: var(--text);
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .sidebar-link:hover {
+            background-color: #eef0f3;
+            border-color: #c9cbcf;
+        }
+
+        .sidebar-link svg {
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+        }
+
+        .sidebar h3 {
+            margin: 0 0 16px 0;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .toc {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .toc ul.toc-children {
+            list-style: none;
+            padding-left: 14px;
+            margin: 2px 0 4px 0;
+            overflow: hidden;
+            max-height: 0;
+            transition: max-height 0.25s ease;
+        }
+
+        .toc-item.expanded > ul.toc-children {
+            max-height: 9999px;
+        }
+
+        .toc li {
+            margin-bottom: 2px;
+        }
+
+        .toc-row {
+            display: flex;
+            align-items: stretch;
+            gap: 2px;
+        }
+
+        .toc-toggle {
+            background: none;
+            border: none;
+            padding: 0;
+            width: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            flex-shrink: 0;
+            border-radius: 3px;
+        }
+
+        .toc-toggle:hover {
+            color: var(--text);
+            background-color: var(--accent-soft);
+        }
+
+        .toc-toggle svg {
+            width: 10px;
+            height: 10px;
+            transition: transform 0.2s ease;
+        }
+
+        .toc-item.expanded > .toc-row > .toc-toggle svg {
+            transform: rotate(90deg);
+        }
+
+        .toc-toggle-spacer {
+            width: 18px;
+            flex-shrink: 0;
+        }
+
+        .toc a {
+            color: var(--text-muted);
+            text-decoration: none;
+            display: block;
+            padding: 4px 8px;
+            font-size: 14px;
+            border-left: 2px solid transparent;
+            border-radius: 0 4px 4px 0;
+            transition: color 0.15s, background-color 0.15s;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .toc a:hover {
+            color: var(--text);
+            background-color: var(--accent-soft);
+            text-decoration: none;
+        }
+
+        .toc a.active {
+            color: var(--text);
+            font-weight: 600;
+            border-left-color: var(--accent);
+            background-color: var(--accent-soft-strong);
+        }
+
+        .toc-level-2 > .toc-row > a {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .toc-level-3 > .toc-row > a {
+            font-size: 13px;
+        }
+
+        .toc-level-4 > .toc-row > a {
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .main-content {
+            margin-left: 300px;
+            width: calc(100% - 300px);
+            padding: 24px;
+            box-sizing: border-box;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            background-color: white;
+            padding: 48px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+            max-width: 920px;
+            width: 100%;
+        }
+
+        /* Mobile header */
+        .mobile-header {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 56px;
+            background-color: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            z-index: 1001;
+            padding: 0 16px;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+        }
+
+        .mobile-header h1 {
+            font-size: 16px;
+            font-weight: 600;
+            margin: 0;
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .menu-toggle {
+            background: none;
+            border: none;
+            padding: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            transition: background-color 0.2s;
+        }
+
+        .menu-toggle:hover {
+            background-color: var(--code-bg);
+        }
+
+        .menu-toggle svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1002;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .sidebar-overlay.active {
+            opacity: 1;
+        }
+
+        @media (max-width: 1024px) {
+            .mobile-header {
+                display: flex;
+            }
+
+            .sidebar {
+                position: fixed;
+                left: -100%;
+                top: 0;
+                width: 85%;
+                max-width: 320px;
+                height: 100vh;
+                z-index: 1003;
+                transition: left 0.3s ease;
+                box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            }
+
+            .sidebar.active {
+                left: 0;
+            }
+
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+                padding-top: 76px;
+            }
+
+            .container {
+                border-radius: 0;
+                padding: 24px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 18px;
+            }
+
+            body {
+                font-size: 16px;
+            }
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            margin-top: 28px;
+            margin-bottom: 16px;
+            font-weight: 600;
+            line-height: 1.25;
+        }
+
+        h1 {
+            font-size: 2em;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 0.3em;
+        }
+
+        h2 {
+            font-size: 1.5em;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 0.3em;
+        }
+
+        h3 {
+            font-size: 1.25em;
+        }
+
+        h4 {
+            font-size: 1em;
+        }
+
+        p {
+            margin-bottom: 16px;
+        }
+
+        a {
+            color: var(--text);
+            text-decoration: underline;
+            text-decoration-color: var(--accent);
+            text-underline-offset: 2px;
+        }
+
+        a:hover {
+            text-decoration-color: var(--accent-dark);
+        }
+
+        ul, ol {
+            margin-bottom: 16px;
+            padding-left: 2em;
+        }
+
+        li {
+            margin-bottom: 4px;
+        }
+
+        code {
+            background-color: var(--code-bg);
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: Consolas, Monaco, 'Courier New', monospace;
+            font-size: 85%;
+        }
+
+        pre {
+            background-color: var(--code-bg);
+            padding: 16px;
+            overflow: auto;
+            font-size: 85%;
+            line-height: 1.45;
+            border-radius: 3px;
+        }
+
+        pre code {
+            background-color: transparent;
+            padding: 0;
+        }
+
+        blockquote {
+            margin: 0 0 16px;
+            padding: 0 1em;
+            color: var(--text-muted);
+            border-left: 0.25em solid #dfe2e5;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-bottom: 16px;
+        }
+
+        table th,
+        table td {
+            padding: 6px 13px;
+            border: 1px solid #dfe2e5;
+        }
+
+        table th {
+            font-weight: 600;
+            background-color: var(--code-bg);
+        }
+
+        table tr {
+            background-color: #fff;
+            border-top: 1px solid #c6cbd1;
+        }
+
+        table tr:nth-child(2n) {
+            background-color: var(--code-bg);
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 16px auto;
+            border-radius: 6px;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin: 16px -20px;
+            padding: 0 20px;
+        }
+
+        @media (max-width: 768px) {
+            .table-wrapper {
+                margin: 16px -16px;
+                padding: 0 16px;
+            }
+
+            table {
+                font-size: 14px;
+            }
+
+            pre {
+                font-size: 14px;
+                padding: 12px;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            img {
+                margin: 12px -16px;
+                max-width: calc(100% + 32px);
+                width: calc(100% + 32px);
+                border-radius: 0;
+            }
+        }
+
+        /* Footnote styling */
+        sup {
+            font-size: 0.8em;
+            vertical-align: super;
+            line-height: 0;
+        }
+
+        .footnote-ref {
+            color: var(--text);
+            text-decoration: none;
+            cursor: help;
+            position: relative;
+        }
+
+        .footnote-tooltip,
+        .glossary-tooltip {
+            visibility: hidden;
+            opacity: 0;
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #1f2328;
+            color: white;
+            text-align: left;
+            padding: 10px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 400;
+            line-height: 1.5;
+            white-space: normal;
+            width: 350px;
+            max-width: 90vw;
+            max-height: 220px;
+            overflow-y: auto;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            z-index: 1000;
+            transition: opacity 0.2s, visibility 0.2s;
+            margin-bottom: 6px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+            text-transform: none;
+            letter-spacing: normal;
+        }
+
+        .footnote-tooltip::-webkit-scrollbar,
+        .glossary-tooltip::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .footnote-tooltip::-webkit-scrollbar-track,
+        .glossary-tooltip::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.1);
+            border-radius: 3px;
+        }
+
+        .footnote-tooltip::-webkit-scrollbar-thumb,
+        .glossary-tooltip::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.3);
+            border-radius: 3px;
+        }
+
+        .footnote-tooltip::after,
+        .glossary-tooltip::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #1f2328 transparent transparent transparent;
+        }
+
+        .footnote-ref:hover .footnote-tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Glossary term styling */
+        .glossary-term {
+            position: relative;
+            color: inherit;
+            border-bottom: 1px dotted var(--accent);
+            cursor: help;
+            display: inline;
+        }
+
+        .glossary-term:hover {
+            color: inherit;
+            border-bottom-color: var(--accent-dark);
+        }
+
+        .glossary-term:hover .glossary-tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .glossary-tooltip-title {
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .footnote-ref {
+                padding: 4px;
+                margin: -4px;
+            }
+
+            .footnote-tooltip,
+            .glossary-tooltip {
+                position: fixed;
+                bottom: 20px;
+                left: 20px;
+                right: 20px;
+                top: auto;
+                transform: none;
+                width: auto;
+                max-width: none;
+                max-height: 40vh;
+                font-size: 14px;
+                z-index: 1004;
+            }
+
+            .footnote-tooltip::after,
+            .glossary-tooltip::after {
+                display: none;
+            }
+
+            .footnote-ref.active .footnote-tooltip,
+            .glossary-term.active .glossary-tooltip {
+                visibility: visible;
+                opacity: 1;
+            }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <header class="mobile-header">
+        <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+        </button>
+        <h1>Bitcoin Quantum Readiness</h1>
+    </header>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="https://presidiobitcoin.org/" target="_blank" rel="noopener noreferrer" class="sidebar-brand">
+                <span class="sidebar-wordmark">Presidio Bitcoin</span>
+            </a>
+            <h2 class="sidebar-title">Bitcoin's Quantum Readiness: Exposure, Mitigations, and Upgrade Paths</h2>
+            <div class="sidebar-meta">
+                <p>First published: April 2026</p>
+                <p id="last-updated">Last updated: Loading...</p>
+            </div>
+            <div class="sidebar-actions">
+                <a href="presidio-bitcoin-quantum-readiness-v1-apr-2026.pdf" target="_blank" rel="noopener noreferrer" class="sidebar-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 0 0 .25-.25V6h-2.75A1.75 1.75 0 0 1 9 4.25V1.5ZM10.5 1.5v2.75c0 .138.112.25.25.25h2.501L10.5 1.5Zm-2.5 7a.75.75 0 0 1 .75.75v2.69l.72-.72a.75.75 0 1 1 1.06 1.06l-2 2a.75.75 0 0 1-1.06 0l-2-2a.75.75 0 1 1 1.06-1.06l.72.72V9.25a.75.75 0 0 1 .75-.75Z"/>
+                    </svg>
+                    Download PDF
+                </a>
+                <a href="https://github.com/presidiobtc/bitcoin-quantum" target="_blank" rel="noopener noreferrer" class="sidebar-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
+                    </svg>
+                    View on GitHub
+                </a>
+            </div>
+        </div>
+
+        <h3>Table of Contents</h3>
+        <ul id="toc" class="toc"></ul>
+    </div>
+
+    <div class="main-content">
+        <div class="container">
+            <div id="content">
+                <div style="text-align: center; padding: 40px;">
+                    <div style="display: inline-block; width: 40px; height: 40px; border: 3px solid #f3f3f3; border-top: 3px solid var(--accent); border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                    <p style="margin-top: 16px; color: var(--text-muted);">Loading content...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const REPORT_TITLE = "Bitcoin's Quantum Readiness: Exposure, Mitigations, and Upgrade Paths";
+
+        fetch('README.md')
+            .then(response => response.text())
+            .then(text => {
+                const footnotes = {};
+                const footnotePattern = /^\[(\^[^\]]+)\]:\s*(.+)$/gm;
+                let match;
+                while ((match = footnotePattern.exec(text)) !== null) {
+                    footnotes[match[1]] = match[2].trim();
+                }
+
+                const footnoteDefinitions = [];
+                Object.keys(footnotes).forEach(id => {
+                    footnoteDefinitions.push({ num: id.substring(1), content: footnotes[id] });
+                });
+
+                let processedText = text.replace(/^\[\^[^\]]+\]:\s*.+$/gm, '');
+
+                window.footnoteContent = {};
+                Object.keys(footnotes).forEach(id => {
+                    const refPattern = new RegExp('\\[\\' + id + '\\]', 'g');
+                    const footnoteNum = id.substring(1);
+                    let content = footnotes[id];
+
+                    const markdownLinkMatch = content.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
+                    if (markdownLinkMatch) {
+                        const linkUrl = markdownLinkMatch[2];
+                        content = `<a href="${linkUrl}" target="_blank" rel="noopener noreferrer" style="color: #c0c898; text-decoration: none; word-break: break-all;">${linkUrl}</a>`;
+                    } else if (content.match(/^https?:\/\//)) {
+                        content = `<a href="${content}" target="_blank" rel="noopener noreferrer" style="color: #c0c898; text-decoration: none; word-break: break-all;">${content}</a>`;
+                    } else {
+                        content = content
+                            .replace(/&/g, '&amp;')
+                            .replace(/</g, '&lt;')
+                            .replace(/>/g, '&gt;')
+                            .replace(/"/g, '&quot;')
+                            .replace(/'/g, '&#039;');
+                    }
+
+                    window.footnoteContent[footnoteNum] = content;
+                    const placeholder = `%%FOOTNOTE_${footnoteNum}_PLACEHOLDER%%`;
+                    const tooltipHtml = `<span class="footnote-ref" style="position: relative; display: inline-block;"><sup><a href="#" onclick="return false;" style="text-decoration: none; color: var(--text);">[${footnoteNum}]</a></sup><span class="footnote-tooltip" data-footnote="${footnoteNum}">${placeholder}</span></span>`;
+                    processedText = processedText.replace(refPattern, tooltipHtml);
+                });
+
+                marked.setOptions({
+                    breaks: true,
+                    gfm: true,
+                    headerIds: true,
+                    mangle: false,
+                    headerPrefix: ''
+                });
+
+                let html = marked.parse(processedText);
+                document.getElementById('content').innerHTML = html;
+
+                fixHeaderIds();
+                renderFootnoteTooltips();
+                injectFootnoteAppendix(footnoteDefinitions);
+                applyGlossaryTooltips();
+                generateTOC();
+                setupScrollSpy();
+                fetchLastUpdated();
+                setupMobileInteractions();
+                wrapTables();
+
+                if (window.location.hash) {
+                    setTimeout(() => {
+                        const target = document.querySelector(window.location.hash);
+                        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }, 100);
+                }
+            })
+            .catch(error => {
+                document.getElementById('content').innerHTML = '<p>Error loading README.md: ' + error + '</p>';
+            });
+
+        function renderFootnoteTooltips() {
+            if (!window.footnoteContent) return;
+            Object.keys(window.footnoteContent).forEach(num => {
+                document.querySelectorAll(`.footnote-tooltip[data-footnote="${num}"]`).forEach(tt => {
+                    tt.innerHTML = window.footnoteContent[num];
+                });
+            });
+        }
+
+        function injectFootnoteAppendix(footnoteDefinitions) {
+            if (footnoteDefinitions.length === 0) return;
+            const footnotesHeader = Array.from(document.querySelectorAll('h1, h2')).find(
+                h => h.textContent.trim().toLowerCase() === 'footnotes'
+            );
+            if (!footnotesHeader) return;
+
+            const list = document.createElement('ol');
+            list.style.paddingLeft = '20px';
+            list.style.lineHeight = '1.8';
+
+            footnoteDefinitions
+                .sort((a, b) => parseInt(a.num) - parseInt(b.num))
+                .forEach(fn => {
+                    const li = document.createElement('li');
+                    li.id = 'fn-' + fn.num;
+                    li.style.marginBottom = '8px';
+                    let content = fn.content;
+                    const mdLink = content.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
+                    if (mdLink) {
+                        content = `<a href="${mdLink[2]}" target="_blank" rel="noopener noreferrer">${mdLink[2]}</a>`;
+                    } else if (content.match(/^https?:\/\//)) {
+                        content = `<a href="${content}" target="_blank" rel="noopener noreferrer">${content}</a>`;
+                    }
+                    li.innerHTML = content;
+                    list.appendChild(li);
+                });
+
+            footnotesHeader.parentNode.insertBefore(list, footnotesHeader.nextSibling);
+        }
+
+        // Auto-link glossary terms in body text to their definitions via hover tooltip
+        function applyGlossaryTooltips() {
+            const glossaryHeader = Array.from(document.querySelectorAll('h1, h2, h3')).find(
+                h => h.textContent.trim().toLowerCase() === 'glossary'
+            );
+            if (!glossaryHeader) return;
+
+            // Find the glossary table that follows the heading
+            let table = glossaryHeader.nextElementSibling;
+            while (table && table.tagName !== 'TABLE') {
+                table = table.nextElementSibling;
+                if (table && /^H[1-3]$/.test(table.tagName)) return;
+            }
+            if (!table) return;
+
+            // Build term -> definition map
+            const terms = [];
+            const seen = new Set();
+            table.querySelectorAll('tbody tr').forEach(row => {
+                const cells = row.querySelectorAll('td');
+                if (cells.length < 2) return;
+                const rawTerm = cells[0].textContent.trim();
+                const definition = cells[1].textContent.trim();
+                if (!rawTerm || !definition) return;
+
+                // Generate searchable variants: full term, parenthetical-stripped, acronym-only
+                const variants = new Set();
+                variants.add(rawTerm);
+                const parenStripped = rawTerm.replace(/\s*\(.*?\)\s*/g, '').trim();
+                if (parenStripped) variants.add(parenStripped);
+                const acronymMatch = rawTerm.match(/\(([A-Z][A-Za-z0-9+/\-]+)\)/);
+                if (acronymMatch) variants.add(acronymMatch[1]);
+                // Slash-separated synonyms (e.g., "SHRINCS / SHRIMPS")
+                rawTerm.split('/').forEach(s => {
+                    const t = s.trim();
+                    if (t) variants.add(t);
+                });
+
+                variants.forEach(v => {
+                    const key = v.toLowerCase();
+                    if (seen.has(key)) return;
+                    seen.add(key);
+                    terms.push({ variant: v, term: rawTerm, definition });
+                });
+            });
+
+            // Sort by length descending so longer phrases match before substrings
+            terms.sort((a, b) => b.variant.length - a.variant.length);
+
+            const escapeRe = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const escapeAttr = s => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+            // Walk content and process each candidate paragraph/list-item/table-cell
+            const content = document.getElementById('content');
+            const blocks = content.querySelectorAll('p, li, td, blockquote');
+
+            blocks.forEach(block => {
+                // Skip if inside the glossary table itself
+                if (block.closest('table') === table) return;
+                // Skip if inside any heading
+                if (block.closest('h1, h2, h3, h4, h5, h6')) return;
+
+                // Track which terms we've already linked in this block (link only first occurrence)
+                const usedInBlock = new Set();
+
+                const walker = document.createTreeWalker(block, NodeFilter.SHOW_TEXT, {
+                    acceptNode: node => {
+                        // Skip text inside links, code, glossary spans, footnotes, headings
+                        if (node.parentElement.closest('a, code, pre, .glossary-term, .footnote-ref, h1, h2, h3, h4, h5, h6')) {
+                            return NodeFilter.FILTER_REJECT;
+                        }
+                        return NodeFilter.FILTER_ACCEPT;
+                    }
+                });
+
+                const textNodes = [];
+                let n;
+                while ((n = walker.nextNode())) textNodes.push(n);
+
+                textNodes.forEach(textNode => {
+                    let text = textNode.nodeValue;
+                    let modified = false;
+                    const replacements = [];
+
+                    for (const t of terms) {
+                        if (usedInBlock.has(t.term)) continue;
+                        // Word-boundary match, case-insensitive for the term
+                        const re = new RegExp('(^|[^A-Za-z0-9])(' + escapeRe(t.variant) + ')(?![A-Za-z0-9])', 'i');
+                        const m = re.exec(text);
+                        if (m) {
+                            replacements.push({ index: m.index + m[1].length, length: m[2].length, t });
+                            usedInBlock.add(t.term);
+                            modified = true;
+                        }
+                    }
+
+                    if (!modified) return;
+
+                    // Apply replacements in reverse so indices stay valid
+                    replacements.sort((a, b) => b.index - a.index);
+
+                    // Build the resulting HTML
+                    let resultHtml = '';
+                    let cursor = text.length;
+                    const parts = [];
+                    replacements.forEach(r => {
+                        parts.push({ kind: 'text', value: text.substring(r.index + r.length, cursor) });
+                        const matched = text.substring(r.index, r.index + r.length);
+                        const tooltipHtml = `<span class="glossary-tooltip"><span class="glossary-tooltip-title">${escapeAttr(r.t.term)}</span>${escapeAttr(r.t.definition)}</span>`;
+                        parts.push({ kind: 'term', html: `<span class="glossary-term">${escapeHtml(matched)}${tooltipHtml}</span>` });
+                        cursor = r.index;
+                    });
+                    parts.push({ kind: 'text', value: text.substring(0, cursor) });
+                    parts.reverse();
+
+                    const fragment = document.createDocumentFragment();
+                    parts.forEach(p => {
+                        if (p.kind === 'text') {
+                            fragment.appendChild(document.createTextNode(p.value));
+                        } else {
+                            const wrap = document.createElement('span');
+                            wrap.innerHTML = p.html;
+                            while (wrap.firstChild) fragment.appendChild(wrap.firstChild);
+                        }
+                    });
+
+                    textNode.parentNode.replaceChild(fragment, textNode);
+                });
+            });
+        }
+
+        function escapeHtml(s) {
+            return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+
+        function fetchLastUpdated() {
+            fetch('https://api.github.com/repos/presidiobtc/bitcoin-quantum/commits?per_page=1')
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.length > 0) {
+                        const lastCommitDate = new Date(data[0].commit.author.date);
+                        const formattedDate = lastCommitDate.toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                        });
+                        document.getElementById('last-updated').textContent = `Last updated: ${formattedDate}`;
+                    }
+                })
+                .catch(() => {
+                    document.getElementById('last-updated').textContent = 'Last updated: See GitHub';
+                });
+        }
+
+        function fixHeaderIds() {
+            document.querySelectorAll('h1, h2, h3, h4, h5, h6').forEach(header => {
+                const text = header.textContent || header.innerText || '';
+                const newId = text.toLowerCase()
+                    .replace(/[^\w\s-]/g, '')
+                    .replace(/\s+/g, '-')
+                    .trim();
+                if (newId) header.id = newId;
+            });
+        }
+
+        function generateTOC() {
+            const content = document.getElementById('content');
+            const toc = document.getElementById('toc');
+
+            const headers = Array.from(content.querySelectorAll('h1, h2, h3, h4')).filter(h => {
+                const t = (h.textContent || '').trim();
+                if (t === REPORT_TITLE) return false;
+                if (t.toLowerCase() === 'table of contents') return false;
+                if (!h.id) {
+                    h.id = t.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-').trim();
+                }
+                return true;
+            });
+
+            const root = { children: [], level: 0 };
+            const stack = [root];
+            headers.forEach(header => {
+                const level = parseInt(header.tagName.substring(1));
+                const node = { header, level, children: [] };
+                while (stack.length > 1 && stack[stack.length - 1].level >= level) stack.pop();
+                stack[stack.length - 1].children.push(node);
+                stack.push(node);
+            });
+
+            function renderNodes(nodes, parentUl) {
+                nodes.forEach(node => {
+                    const li = document.createElement('li');
+                    li.className = 'toc-item toc-level-' + node.level;
+
+                    const row = document.createElement('div');
+                    row.className = 'toc-row';
+
+                    if (node.children.length > 0) {
+                        li.classList.add('has-children');
+                        const toggle = document.createElement('button');
+                        toggle.className = 'toc-toggle';
+                        toggle.type = 'button';
+                        toggle.setAttribute('aria-label', 'Toggle subsections');
+                        toggle.innerHTML = '<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 2 8 6 4 10"></polyline></svg>';
+                        toggle.addEventListener('click', e => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            li.classList.toggle('expanded');
+                        });
+                        row.appendChild(toggle);
+                    } else {
+                        const spacer = document.createElement('span');
+                        spacer.className = 'toc-toggle-spacer';
+                        row.appendChild(spacer);
+                    }
+
+                    const a = document.createElement('a');
+                    a.href = '#' + node.header.id;
+                    a.textContent = node.header.textContent;
+                    a.dataset.targetId = node.header.id;
+
+                    a.addEventListener('click', e => {
+                        e.preventDefault();
+                        node.header.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        document.querySelectorAll('.toc a').forEach(l => l.classList.remove('active'));
+                        a.classList.add('active');
+                        history.replaceState(null, '', '#' + node.header.id);
+                        expandAncestors(li);
+                    });
+                    row.appendChild(a);
+
+                    li.appendChild(row);
+
+                    if (node.children.length > 0) {
+                        const childUl = document.createElement('ul');
+                        childUl.className = 'toc-children';
+                        renderNodes(node.children, childUl);
+                        li.appendChild(childUl);
+                    }
+
+                    parentUl.appendChild(li);
+                });
+            }
+
+            renderNodes(root.children, toc);
+
+            // If URL has a hash, expand path to it
+            if (window.location.hash) {
+                const link = toc.querySelector(`a[href="${window.location.hash}"]`);
+                if (link) expandAncestors(link.closest('.toc-item'));
+            }
+        }
+
+        function expandAncestors(li) {
+            let p = li;
+            while (p) {
+                if (p.classList && p.classList.contains('toc-item')) p.classList.add('expanded');
+                p = p.parentElement ? p.parentElement.closest('.toc-item') : null;
+            }
+        }
+
+        function setupScrollSpy() {
+            const headers = document.querySelectorAll('#content h1, #content h2, #content h3, #content h4');
+            const tocLinks = document.querySelectorAll('.toc a');
+            let scrollTimeout;
+            let lastHash = window.location.hash;
+
+            window.addEventListener('scroll', () => {
+                let current = '';
+                headers.forEach(header => {
+                    const rect = header.getBoundingClientRect();
+                    if (rect.top <= 100) current = header.id;
+                });
+
+                let activeLink = null;
+                tocLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === '#' + current) {
+                        link.classList.add('active');
+                        activeLink = link;
+                    }
+                });
+
+                if (activeLink) expandAncestors(activeLink.closest('.toc-item'));
+
+                clearTimeout(scrollTimeout);
+                scrollTimeout = setTimeout(() => {
+                    if (current && '#' + current !== lastHash) {
+                        history.replaceState(null, '', current ? '#' + current : window.location.pathname);
+                        lastHash = '#' + current;
+                    }
+                }, 150);
+            });
+        }
+
+        function setupMobileInteractions() {
+            const menuToggle = document.getElementById('menuToggle');
+            const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+            menuToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('active');
+                sidebarOverlay.style.display = sidebar.classList.contains('active') ? 'block' : 'none';
+                setTimeout(() => {
+                    sidebarOverlay.classList.toggle('active', sidebar.classList.contains('active'));
+                }, 10);
+                document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : '';
+            });
+
+            sidebarOverlay.addEventListener('click', () => {
+                sidebar.classList.remove('active');
+                sidebarOverlay.classList.remove('active');
+                setTimeout(() => { sidebarOverlay.style.display = 'none'; }, 300);
+                document.body.style.overflow = '';
+            });
+
+            if (window.innerWidth <= 1024) {
+                document.querySelectorAll('.toc a').forEach(link => {
+                    link.addEventListener('click', () => {
+                        sidebar.classList.remove('active');
+                        sidebarOverlay.classList.remove('active');
+                        setTimeout(() => { sidebarOverlay.style.display = 'none'; }, 300);
+                        document.body.style.overflow = '';
+                    });
+                });
+            }
+
+            if ('ontouchstart' in window) {
+                document.addEventListener('click', (e) => {
+                    const footnoteRef = e.target.closest('.footnote-ref');
+                    const glossaryTerm = e.target.closest('.glossary-term');
+
+                    if (footnoteRef || glossaryTerm) {
+                        e.preventDefault();
+                        const target = footnoteRef || glossaryTerm;
+                        const selector = footnoteRef ? '.footnote-ref.active' : '.glossary-term.active';
+                        document.querySelectorAll(selector).forEach(el => {
+                            if (el !== target) el.classList.remove('active');
+                        });
+                        target.classList.toggle('active');
+                    } else {
+                        document.querySelectorAll('.footnote-ref.active, .glossary-term.active').forEach(el => {
+                            el.classList.remove('active');
+                        });
+                    }
+                });
+            }
+        }
+
+        function wrapTables() {
+            document.querySelectorAll('table').forEach(table => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'table-wrapper';
+                table.parentNode.insertBefore(wrapper, table);
+                wrapper.appendChild(table);
+            });
+        }
+    </script>
+</body>
+</html>
