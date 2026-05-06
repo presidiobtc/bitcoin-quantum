@@ -174,7 +174,7 @@ The most concrete codification of the soft-freeze approach in the BIP repository
 
 ### BIP-361 (Post Quantum Migration and Legacy Signature Sunset)
 
-**BIP-361**[^bip-361-2], published in April 2026 by Jameson Lopp and a group of co-authors, is the first concrete proposal of the soft-freeze approach in the BIP repository, making it quite controversial.
+**BIP-361**[^bip-361], published in April 2026 by Jameson Lopp and a group of co-authors, is the first concrete proposal of the soft-freeze approach in the BIP repository, making it quite controversial.
 
 The proposal specifies a three-phase rollout that would take effect after a post-quantum output type is implemented:
 
@@ -224,7 +224,7 @@ So, at a high level, an orderly transition would move through three phases: rese
 6) **Legacy outputs decision**  
    After a safe destination exists and migration is underway, the ecosystem still must decide how to handle unmigrated, quantum-vulnerable coins.  
    
-   Because this choice might divide the community, it is the clearest plausible fault line for a contentious fork. If there is a split, the winner (which chain is "bitcoin") will likely be chosen by the market. Once one version consistently trades at a premium, liquidity and users tend to follow, and the other side fades quickly, similar to how the market resolved the 2017 Bitcoin Cash split. The April 2026 publication of BIP-361[^bip-361-3] is an early concrete attempt to define what this step might look like in practice.
+   Because this choice might divide the community, it is the clearest plausible fault line for a contentious fork. If there is a split, the winner (which chain is "bitcoin") will likely be chosen by the market. Once one version consistently trades at a premium, liquidity and users tend to follow, and the other side fades quickly, similar to how the market resolved the 2017 Bitcoin Cash split. The April 2026 publication of BIP-361[^bip-361] is an early concrete attempt to define what this step might look like in practice.
 
 ## **Rapid Response Playbook** 
 
@@ -280,7 +280,7 @@ A careful yet proactive approach will help protect the network's functioning and
 | :--- | :--- |
 | Address reuse | Spending from the same Bitcoin address more than once, which exposes the public key. |
 | BIP (Bitcoin Improvement Proposal) | A formal proposal document for changes to Bitcoin's protocol, specification, or standards. |
-| BIP-361[^bip-361-4] | A draft Bitcoin Improvement Proposal published in April 2026 (Lopp et al.) that codifies a three-phase legacy-signature sunset: Phase A blocks new sends to quantum-vulnerable addresses ~3 years after activation, Phase B requires a quantum-safe rescue protocol for legacy spends ~5 years after activation, and Phase C enables a quantum-safe recovery mechanism for unmigrated coins. |
+| BIP-361[^bip-361] | A draft Bitcoin Improvement Proposal published in April 2026 (Lopp et al.) that codifies a three-phase legacy-signature sunset: Phase A blocks new sends to quantum-vulnerable addresses ~3 years after activation, Phase B requires a quantum-safe rescue protocol for legacy spends ~5 years after activation, and Phase C enables a quantum-safe recovery mechanism for unmigrated coins. |
 | Commit/reveal scheme | A transaction protection mechanism where a user first publishes a post-quantum-secured commitment to the hash of a later vulnerable spend, waits for confirmations, then broadcasts the spend. Because it is locked to the earlier commitment, a quantum attacker cannot substitute its own transaction. |
 | Cryptographically Relevant Quantum Computer (CRQC) | A quantum computer powerful enough to break the elliptic curve cryptography Bitcoin relies on today. |
 | ECDSA (Elliptic Curve Digital Signature Algorithm) | The elliptic curve signature scheme Bitcoin has used since launch. |
@@ -390,9 +390,6 @@ The \~956,830 UTXO estimate for \~90% of BTC value should also be understood as 
 [^sphincs-research]: https://eprint.iacr.org/2025/2203.pdf
 [^bip-360]: https://github.com/bitcoin/bips/blob/master/bip-0360.mediawiki
 [^bip-361]: https://www.bip361.org/
-[^bip-361-2]: https://www.bip361.org/
-[^bip-361-3]: https://www.bip361.org/
-[^bip-361-4]: https://www.bip361.org/
 [^p2q]: https://github.com/casey/bips/blob/bip-p2q/bip-p2q.md
 [^blockstream-shrincs-deployment]: https://blog.blockstream.com/blockstream-research-demonstrates-quantum-resistant-transaction-signing-on-liquid-using-simplicity-smart-contracts/
 [^anduro]: https://www.anduro.io/
