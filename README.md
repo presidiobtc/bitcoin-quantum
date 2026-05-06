@@ -15,6 +15,7 @@
   - [Testing Environments](#testing-environments)
   - [Migration Safeguards](#migration-safeguards)
   - [Legacy Coin Policy](#legacy-coin-policy)
+  - [BIP-361 (Post Quantum Migration and Legacy Signature Sunset)](#bip-361-post-quantum-migration-and-legacy-signature-sunset)
 - [Orderly Transition Scenario](#orderly-transition-scenario)
   - [How an Orderly Transition Will Likely Work](#how-an-orderly-transition-will-likely-work)
 - [Rapid Response Playbook](#rapid-response-playbook)
@@ -165,7 +166,27 @@ Assuming a post-quantum destination exists and migration is meaningfully underwa
 
    This approach lowers the risk of an unnecessary freeze, though it relies on the quantum-capable entity choosing the bounty (to which anyone could contribute) over covert theft.
 
-To frame the stakes from a market perspective, liquidating the core assumed-lost legacy supply, 1.72 million P2PK coins spread across almost 36,000 addresses, is roughly equivalent to about one year of "peak bull-market" long-term holder selling per Checkonchain[^checkonchain]. 
+One edge case, however, is time-locked coins. Holders whose coins are already locked under time-based conditions (e.g., long-dated timelock arrangements) cannot migrate before the timelock expires. If the timelock outlasts the migration window, those coins would be frozen unless their owners can use any recovery path the protocol provides. Any "freeze with recovery" policy will have edge cases the ecosystem must weigh against allowing quantum theft.
+
+To frame the stakes from a market perspective, liquidating the core assumed-lost legacy supply, 1.72 million P2PK coins spread across almost 36,000 addresses, is roughly equivalent to about one year of "peak bull-market" long-term holder selling per Checkonchain[^checkonchain].
+
+The most concrete codification of the soft-freeze approach in the BIP repository to date is **BIP-361**[^bip-361], covered in the next subsection.
+
+### BIP-361 (Post Quantum Migration and Legacy Signature Sunset)
+
+**BIP-361**[^bip-361-2], published in April 2026 by Jameson Lopp and a group of co-authors, is the first concrete proposal of the soft-freeze approach in the BIP repository, making it quite controversial.
+
+The proposal specifies a three-phase rollout that would take effect after a post-quantum output type is implemented:
+
+* **Phase A** (activates \~3 years after BIP-361 activation): Disallows creating new quantum-vulnerable outputs, accelerating adoption of post-quantum address types.
+* **Phase B** (activates 2 years after Phase A, \~5 years after BIP-361 activation): Tightens spending rules such that nodes reject transactions relying on legacy ECDSA/Schnorr-based spending paths for quantum-vulnerable outputs, rendering those coins frozen unless recovered via Phase C's rescue mechanism.
+* **Phase C** (Timeline TBD): Allows holders who did not migrate quantum-vulnerable coins to recover them using a quantum-safe proof mechanism. The BIP does not specify a particular recovery construction, though a zero-knowledge proof of seed phrase ownership is discussed as one possible example.
+
+BIP-361 would deploy as a series of soft forks, meaning Phases A and B are intended to be backward-compatible. The BIP mentions that Phase C could potentially be soft-forkable if bundled with Phase B, though a more expressive recovery path may require a hard fork.
+
+Put simply, the motivation for this BIP stems from a different interpretation of how the bitcoin network should protect bitcoiners' property rights. From the BIP authors' perspective, the network ultimately respects those rights by ensuring the popular phrase "Not your keys, not your coins" remains true. In other words, by guaranteeing that quantum adversaries cannot derive your private key from your public key and spend your coins without your permission. The opposing view is that quantum protection is not the network's decision to make. Each individual holder is responsible for protecting themselves if they consider quantum a threat, and the network should not intervene on their behalf.
+
+It should also be noted that the BIP is not entirely philosophically motivated. The authors additionally argue that establishing a concrete timeline would also serve to incentivize key players such as bitcoin holders, exchanges, and miners to actively start planning for a migration.
 
 ## **Orderly Transition Scenario**
 
@@ -203,7 +224,7 @@ So, at a high level, an orderly transition would move through three phases: rese
 6) **Legacy outputs decision**  
    After a safe destination exists and migration is underway, the ecosystem still must decide how to handle unmigrated, quantum-vulnerable coins.  
    
-   Because this choice might divide the community, it is the clearest plausible fault line for a contentious fork. If there is a split, the winner (which chain is "bitcoin") will likely be chosen by the market. Once one version consistently trades at a premium, liquidity and users tend to follow, and the other side fades quickly, similar to how the market resolved the 2017 Bitcoin Cash split.
+   Because this choice might divide the community, it is the clearest plausible fault line for a contentious fork. If there is a split, the winner (which chain is "bitcoin") will likely be chosen by the market. Once one version consistently trades at a premium, liquidity and users tend to follow, and the other side fades quickly, similar to how the market resolved the 2017 Bitcoin Cash split. The April 2026 publication of BIP-361[^bip-361-3] is an early concrete attempt to define what this step might look like in practice.
 
 ## **Rapid Response Playbook** 
 
@@ -259,6 +280,7 @@ A careful yet proactive approach will help protect the network's functioning and
 | :--- | :--- |
 | Address reuse | Spending from the same Bitcoin address more than once, which exposes the public key. |
 | BIP (Bitcoin Improvement Proposal) | A formal proposal document for changes to Bitcoin's protocol, specification, or standards. |
+| BIP-361[^bip-361-4] | A draft Bitcoin Improvement Proposal published in April 2026 (Lopp et al.) that codifies a three-phase legacy-signature sunset: Phase A blocks new sends to quantum-vulnerable addresses ~3 years after activation, Phase B requires a quantum-safe rescue protocol for legacy spends ~5 years after activation, and Phase C enables a quantum-safe recovery mechanism for unmigrated coins. |
 | Commit/reveal scheme | A transaction protection mechanism where a user first publishes a post-quantum-secured commitment to the hash of a later vulnerable spend, waits for confirmations, then broadcasts the spend. Because it is locked to the earlier commitment, a quantum attacker cannot substitute its own transaction. |
 | Cryptographically Relevant Quantum Computer (CRQC) | A quantum computer powerful enough to break the elliptic curve cryptography Bitcoin relies on today. |
 | ECDSA (Elliptic Curve Digital Signature Algorithm) | The elliptic curve signature scheme Bitcoin has used since launch. |
@@ -290,6 +312,7 @@ A careful yet proactive approach will help protect the network's functioning and
 | SPHINCS+ | A hash-based post-quantum signature scheme that is the basis for most of the Bitcoin-specific post-quantum work to date. |
 | SHRINCS / SHRIMPS | SPHINCS+ variants tailored for Bitcoin, likely to be used in combination for the initial post-quantum spend path. |
 | Taproot-like output type | An output type that supports multiple, optional spending conditions (e.g., P2TR, P2MR, P2Q). |
+| Time-locked coins | Coins that, by construction, cannot be moved until a future block height or timestamp; an edge case for soft-freeze policies because they cannot be migrated to a post-quantum address before their timelock expires. |
 | UTXO (Unspent Transaction Output) | An unspent coin on Bitcoin's ledger; the UTXO set is the set of all unspent coins currently on Bitcoin's ledger. |
 
 **Bitcoin Development Mailing List Analysis**:   
@@ -366,6 +389,10 @@ The \~956,830 UTXO estimate for \~90% of BTC value should also be understood as 
 [^quantum-vulnerable-analysis-2]: https://www.youtube.com/watch?v=a_B8BnwagEU&t=151s
 [^sphincs-research]: https://eprint.iacr.org/2025/2203.pdf
 [^bip-360]: https://github.com/bitcoin/bips/blob/master/bip-0360.mediawiki
+[^bip-361]: https://www.bip361.org/
+[^bip-361-2]: https://www.bip361.org/
+[^bip-361-3]: https://www.bip361.org/
+[^bip-361-4]: https://www.bip361.org/
 [^p2q]: https://github.com/casey/bips/blob/bip-p2q/bip-p2q.md
 [^blockstream-shrincs-deployment]: https://blog.blockstream.com/blockstream-research-demonstrates-quantum-resistant-transaction-signing-on-liquid-using-simplicity-smart-contracts/
 [^anduro]: https://www.anduro.io/
