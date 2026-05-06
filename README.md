@@ -50,7 +50,7 @@ Today's quantum computers are still firmly in an early, experimental phase. Thes
 
 Recent excitement centers around results like those from Google's Willow[^google-willow] (December 2024), which demonstrate breakthroughs in error-correction scalability. These experiments show, for the first time, that if you use more physical qubits to protect one "logical" qubit (an error-corrected qubit), that logical qubit can get more reliable, not less. While necessary, this is still insufficient because the more challenging, unproven bottleneck is performing operations *between* multiple logical qubits. Some researchers note that this bottleneck may reflect hard physical obstacles: how precisely matter can be controlled, how cold systems can be kept, and how much noise can be eliminated. Since these constraints may not budge with investment or iteration, progress could be materially slower or even plateau far below the thresholds required for cryptographically relevant machines. 
 
-Nevertheless, there are enough credible signals to treat CRQCs as technically feasible and a potential risk at some point. Others include governments planning to move systems to post-quantum cryptography by the 2030s, recent surveys[^expert-survey] showing that most experts assign a 50% probability to CRQCs emerging by 2030–2035, and the compression of CRQC resource[^google-resource-estimates] estimates[^arxiv-resource-estimates]. 
+Nevertheless, there are enough credible signals to treat CRQCs as technically feasible and a potential risk at some point. Others include governments planning to move systems to post-quantum cryptography by the 2030s, recent surveys[^expert-survey] showing that most experts assign a 50% probability to CRQCs emerging by 2030–2035, and the compression of CRQC resource[^google-resource-estimates] estimates[^arxiv-resource-estimates]. Recent research[^quantum-advantage] has also provided a theoretical proof of exponential quantum advantages on classical tasks, specifically in AI and machine learning workloads. While this does not directly threaten bitcoin’s cryptography, it widens the commercial motivation for scaling quantum hardware, which could impact the timeline for reaching cryptographically relevant machines.
 
 Breakthroughs that would warrant revising CRQC threat timelines:
 
@@ -361,6 +361,7 @@ The \~956,830 UTXO estimate for \~90% of BTC value should also be understood as 
 [^expert-survey]: https://aeemobility.de/english-content/from-around-2035-quantum-computers-will-have-a-50-probability-of-breaking-current-encryption/
 [^google-resource-estimates]: https://quantumai.google/static/site-assets/downloads/cryptocurrency-whitepaper.pdf
 [^arxiv-resource-estimates]: https://arxiv.org/html/2603.28627v1
+[^quantum-advantage]: https://arxiv.org/abs/2604.07639
 [^quantum-vulnerable-analysis]: https://www.youtube.com/watch?v=a_B8BnwagEU&t=151s
 [^chaincode-mining-report]: https://chaincode.com/bitcoin-post-quantum.pdf
 [^quantum-vulnerable-analysis-2]: https://www.youtube.com/watch?v=a_B8BnwagEU&t=151s
