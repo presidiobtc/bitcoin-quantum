@@ -99,7 +99,7 @@ The core mitigation, however, is to replace bitcoin's elliptic curve cryptograph
 
 There are two leading classes of post-quantum signatures: lattice-based and hash-based. Lattice-based signatures are better in terms of throughput and fees because they're relatively compact. However, lattice-based cryptography is still quite new, so there is a risk it ultimately turns out to be weaker than expected. Hash-based signatures, on the other hand, are simpler and more conservative, introducing no novel cryptographic assumptions since they rely solely on hash functions, which are already widely used in bitcoin (e.g., in mining, scripts, commitments, etc.). However, they are much larger on-chain, meaning lower throughput and higher fees.
 
-Most of the bitcoin-specific work to date has been on the hash-based signature scheme SPHINCS+. Recent research[^sphincs-research] shows that SPHINCS+ can be reconfigured for bitcoin's usage patterns, materially reducing its size. 
+Most of the bitcoin-specific work to date has been on hash-based signature schemes. In August 2026, researchers published a draft BIP for SHRINCS[^shrincs], a hash-based signature scheme designed specifically for bitcoin that can produce materially smaller signatures than standardized hash-based schemes. 
 
 Given that implementing new cryptography in bitcoin is a complex, network-wide upgrade, bitcoin must walk the fine line between waiting for the right cryptographic solution to mature but still deploying in a timely manner, before quantum computers become a real threat.
 
@@ -387,7 +387,7 @@ The \~956,830 UTXO estimate for \~90% of BTC value should also be understood as 
 
 ## Footnotes
 
-[^shrincs]: https://delvingbitcoin.org/t/shrincs-324-byte-stateful-post-quantum-signatures-with-static-backups/2158
+[^shrincs]: https://github.com/SHRINCS/shrincs-bip/blob/main/SHRINCS.md
 [^shrimps]: https://delvingbitcoin.org/t/shrimps-2-5-kb-post-quantum-signatures-across-multiple-stateful-devices/2355
 [^crqc-playbook]: https://pq-bitcoin.org/posts/bitcoins-crqc-response
 [^roasbeef-gist]: https://gist.github.com/Roasbeef/563f173fe44e2005e003a082716e586f
