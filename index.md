@@ -70,11 +70,11 @@ Source: Analysis of Quantum Vulnerable Bitcoin[^10]
 
 Coins whose public keys are not visible on-chain (i.e., hashed formats, the most commonly used address types today) would only become vulnerable to short-range theft during a spend window, when the transaction reveals the public key. Whether early CRQCs would be powerful enough to exploit that brief window (usually a block, roughly 10 minutes) remains uncertain, but it is a possibility.  
 
-CRQCs also pose a potential threat to Bitcoin mining, as Grover’s algorithm theoretically enables a CRQC to search for a block header whose hash is below the difficulty target quadratically faster than classical computers. That said, quantum mining is not easily parallelizable, making it difficult to compete at scale with large-scale classical mining operations. For a deeper dive into quantum’s potential impact on Bitcoin mining, we recommend Chaincode Labs’ report[^11].
+CRQCs also pose a potential threat to bitcoin mining, as Grover’s algorithm theoretically enables a CRQC to search for a block header whose hash is below the difficulty target quadratically faster than classical computers. That said, quantum mining is not easily parallelizable, making it difficult to compete at scale with large-scale classical mining operations. For a deeper dive into quantum’s potential impact on bitcoin mining, we recommend Chaincode Labs’ report[^11].
 
 ## **Mitigations** 
 
-Since 2023, the share of posts and replies on the Bitcoin Development Mailing List that mention quantum has increased dramatically. Developers and researchers are engaging the threat directly and now advancing a set of complementary mitigations that address different stages and layers of quantum risk to Bitcoin, collectively outlining a path toward post-quantum Bitcoin. Several proposals are in draft, but much of the work is still in research and discussion, with no final standards or activation decisions as of yet.
+Since 2023, the share of posts and replies on the Bitcoin Development Mailing List that mention quantum has increased dramatically. Developers and researchers are engaging the threat directly and now advancing a set of complementary mitigations that address different stages and layers of quantum risk to bitcoin, collectively outlining a path toward post-quantum bitcoin. Several proposals are in draft, but much of the work is still in research and discussion, with no final standards or activation decisions as of yet.
 
 ![](assets/image2)
 
